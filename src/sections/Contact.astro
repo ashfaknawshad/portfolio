@@ -1,0 +1,160 @@
+---
+// Issue #5: Contact the Hero — closing back-cover. Real contact details, see
+// src/data/contact.ts.
+import Icon from '../components/Icon.astro';
+import Panel from '../components/Panel.astro';
+import SectionAtmosphere from '../components/SectionAtmosphere.astro';
+import { email, contactLinks } from '../data/contact';
+---
+
+<section class="contact" id="issue-5">
+	<SectionAtmosphere kind="backcover" />
+	<header class="contact__header">
+		<span class="contact__eyebrow" data-reveal="rise">Issue #5: Contact the Hero</span>
+		<h2 class="contact__title" data-reveal="pop">TO BE CONTINUED&hellip;</h2>
+		<p class="contact__lede" data-reveal="rise">
+			Got a project, a tutoring question, or just want to talk movies? The panel's open.
+		</p>
+	</header>
+
+	<Panel rotate={-0.4} class="contact__email-panel" data-reveal="fall">
+		<a href={`mailto:${email}`} class="contact__email-link">
+			<Icon name="email" size="1.4em" />
+			<span>{email}</span>
+		</a>
+	</Panel>
+
+	<ul class="contact__links">
+		{
+			contactLinks.map((link, i) => (
+				<li data-reveal="rise" style={`--reveal-i: ${i}`}>
+					<a href={link.url} class="contact__link" target="_blank" rel="noopener noreferrer">
+						<Icon name={link.icon} size="1.3em" />
+						<span>{link.label}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+
+	<footer class="contact__footer" data-reveal="fade">
+		<p>
+			Ashfak Nawshad &mdash; Origin Story, Vol. 1. Printed on 100% recycled pixels.
+			No AI was harmed in the making of this portfolio.
+		</p>
+	</footer>
+</section>
+
+<style>
+	.contact {
+		position: relative;
+		isolation: isolate; /* stacking context for the SectionAtmosphere layer */
+		padding: var(--space-panel);
+		max-width: 40rem;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.contact__header {
+		margin-bottom: clamp(2rem, 5vw, 2.75rem);
+	}
+
+	.contact__eyebrow {
+		display: block;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.85rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		/* Crimson to match the back-cover rays and group with Team-Ups as a "showcase"
+		   issue, distinct from the academic teal of Powers/Side Quests. */
+		color: var(--color-crimson);
+		margin-bottom: 0.5rem;
+	}
+
+	.contact__title {
+		margin: 0 0 0.75rem;
+	}
+
+	.contact__lede {
+		color: var(--color-caption);
+		margin: 0 auto;
+	}
+
+	.contact :global(.contact__email-panel) {
+		display: inline-block;
+		margin-bottom: clamp(2rem, 5vw, 2.5rem);
+	}
+
+	.contact__email-link {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.15rem, 4vw, 1.5rem);
+		color: var(--color-crimson);
+		text-decoration: none;
+	}
+
+	.contact__email-link:hover {
+		color: var(--color-teal);
+	}
+
+	.contact__links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.75rem;
+		list-style: none;
+		margin: 0 0 clamp(2.5rem, 6vw, 3.5rem);
+		padding: 0;
+	}
+
+	.contact__link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--color-ink);
+		background: var(--color-paper);
+		border: 2px solid var(--color-ink);
+		border-radius: 0.4em;
+		padding: 0.55em 1em;
+		text-decoration: none;
+		transition:
+			transform 0.2s ease,
+			border-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.contact__link:hover {
+		transform: scale(1.05);
+		border-color: var(--color-crimson);
+		color: var(--color-crimson);
+	}
+
+	.contact__footer {
+		border-top: 1px dashed var(--color-rule);
+		padding-top: 1.25rem;
+	}
+
+	.contact__footer p {
+		font-family: var(--font-body);
+		font-size: 0.8rem;
+		color: var(--color-caption);
+		margin: 0 auto;
+		max-width: 28rem;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.contact__link {
+			transition: none;
+		}
+
+		.contact__link:hover {
+			transform: none;
+		}
+	}
+</style>

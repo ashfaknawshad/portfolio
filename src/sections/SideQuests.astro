@@ -1,0 +1,165 @@
+---
+// Issue #4: Side Quests — tutoring. Content is placeholder (see src/data/tutoring.ts)
+// pending real syllabi/results/testimonials from Ashfak.
+import Panel from '../components/Panel.astro';
+import SkillBadge from '../components/SkillBadge.astro';
+import StatBurst from '../components/StatBurst.astro';
+import SpeechBubble from '../components/SpeechBubble.astro';
+import SectionAtmosphere from '../components/SectionAtmosphere.astro';
+import { syllabusGroups, resultStats, testimonials } from '../data/tutoring';
+---
+
+<section class="side-quests" id="issue-4">
+	<SectionAtmosphere kind="grid" />
+	<header class="side-quests__header">
+		<span class="side-quests__eyebrow" data-reveal="rise">Issue #4: Side Quests</span>
+		<h2 class="side-quests__title" data-reveal="pop">EXTRA CREDIT</h2>
+		<p class="side-quests__lede" data-reveal="rise">
+			Mathematics tutor for the Sri Lankan local syllabus and Edexcel AS &amp; A Level.
+			Same person who builds the AI — just with a whiteboard marker instead of a keyboard.
+		</p>
+	</header>
+
+	<div class="side-quests__syllabi">
+		{
+			syllabusGroups.map((group, i) => (
+				<Panel
+					rotate={i % 2 === 0 ? -0.5 : 0.5}
+					class="syllabus-panel"
+					data-reveal="fall"
+					style={`--reveal-i: ${i}`}
+				>
+					<h3 class="syllabus-panel__title">{group.name}</h3>
+					<div class="syllabus-panel__tags">
+						{group.subjects.map((subject) => (
+							<SkillBadge name={subject} />
+						))}
+					</div>
+				</Panel>
+			))
+		}
+	</div>
+
+	<div class="side-quests__stats">
+		{
+			resultStats.map((stat, i) => (
+				// Wrapper carries the reveal — StatBurst's own root already owns a
+				// transform + transition (its POW/BAM hover), which would collide with
+				// the reveal transition if applied directly.
+				<div class="stat-reveal" data-reveal="pop" style={`--reveal-i: ${i}`}>
+					<StatBurst value={stat.value} label={stat.label} rotate={i % 2 === 0 ? -4 : 4} seed={i} />
+				</div>
+			))
+		}
+	</div>
+
+	<div class="side-quests__testimonials">
+		{
+			testimonials.map((testimonial, i) => (
+				<SpeechBubble
+					author={testimonial.author}
+					tail={i % 2 === 0 ? 'left' : 'right'}
+					data-reveal="rise"
+				>
+					{testimonial.quote}
+				</SpeechBubble>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.side-quests {
+		position: relative;
+		isolation: isolate; /* stacking context for the SectionAtmosphere layer */
+		padding: var(--space-panel);
+		max-width: 72rem;
+		margin: 0 auto;
+	}
+
+	.side-quests__header {
+		text-align: center;
+		max-width: 34rem;
+		margin: 0 auto clamp(2.5rem, 6vw, 3.5rem);
+	}
+
+	.side-quests__eyebrow {
+		display: block;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.85rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-teal);
+		margin-bottom: 0.5rem;
+	}
+
+	.side-quests__title {
+		margin: 0 0 0.75rem;
+	}
+
+	.side-quests__lede {
+		color: var(--color-caption);
+		margin: 0 auto;
+	}
+
+	.side-quests__syllabi {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: clamp(1.5rem, 4vw, 2rem);
+		margin-bottom: clamp(3rem, 7vw, 4rem);
+	}
+
+	.syllabus-panel__title {
+		font-family: var(--font-display);
+		color: var(--color-crimson);
+		text-shadow: 0.06em 0.06em 0 var(--color-ink);
+		font-size: 1.4rem;
+		margin: 0 0 1rem;
+	}
+
+	.syllabus-panel__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.side-quests__stats {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: flex-start;
+		gap: clamp(1.5rem, 5vw, 2.5rem);
+		margin-bottom: clamp(3rem, 7vw, 4rem);
+	}
+
+	/* Reveal wrapper around each StatBurst (the burst can't take data-reveal directly
+	   — its root owns the POW/BAM hover transform+transition). Shrink-wraps the burst
+	   so the flex row lays out exactly as if the burst were the direct child. */
+	.stat-reveal {
+		display: flex;
+	}
+
+	.side-quests__testimonials {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: clamp(1.5rem, 4vw, 2rem);
+	}
+
+	.side-quests__testimonials :global(.bubble:nth-child(even)) {
+		align-self: flex-end;
+	}
+
+	@media (min-width: 700px) {
+		.side-quests__syllabi {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1100px) {
+		.side-quests__syllabi {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

@@ -1,0 +1,297 @@
+/* Fonts: locked pairing — Bangers (cover/display) + Spectral (body). Self-hosted, latin subset. */
+@font-face {
+  font-family: 'Bangers';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/bangers.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Spectral';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/spectral-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Spectral';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/spectral-600.woff2') format('woff2');
+}
+
+:root {
+  /* Palette — locked. See type-pairings artifact for rationale. */
+  --color-ink: #1a1a1a;
+  --color-paper: #f4edda;
+  --color-paper-dim: #ece3cd;
+  --color-crimson: #9e3426;
+  --color-teal: #1b7a72;
+  --color-gold: #c68a1f;
+
+  --color-rule: rgb(26 26 26 / 16%);
+  --color-shadow: rgb(26 26 26 / 35%);
+  --color-caption: rgb(26 26 26 / 62%);
+
+  /* Type */
+  --font-display: 'Bangers', cursive;
+  --font-body: 'Spectral', Georgia, serif;
+
+  --step-body: clamp(1rem, 0.94rem + 0.3vw, 1.125rem);
+  --step-h1: clamp(2.25rem, 1.9rem + 1.75vw, 3.75rem);
+  --step-h2: clamp(1.75rem, 1.5rem + 1.25vw, 2.75rem);
+  --step-h3: clamp(1.375rem, 1.2rem + 0.75vw, 1.875rem);
+
+  --space-panel: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+
+  color-scheme: light dark;
+}
+
+:root[data-theme='dark'] {
+  --color-ink: #f2ead9;
+  --color-paper: #14151a;
+  --color-paper-dim: #1c1e24;
+  --color-crimson: #9e3426;
+  --color-teal: #4fd6c6;
+  --color-gold: #f0b429;
+
+  --color-rule: rgb(242 234 217 / 14%);
+  --color-shadow: rgb(0 0 0 / 60%);
+  --color-caption: rgb(242 234 217 / 62%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-ink: #f2ead9;
+    --color-paper: #14151a;
+    --color-paper-dim: #1c1e24;
+    --color-crimson: #9e3426;
+    --color-teal: #4fd6c6;
+    --color-gold: #f0b429;
+
+    --color-rule: rgb(242 234 217 / 14%);
+    --color-shadow: rgb(0 0 0 / 60%);
+    --color-caption: rgb(242 234 217 / 62%);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth jumps for the chapter-nav anchor links. The reduced-motion block below
+     forces this back to auto. */
+  scroll-behavior: smooth;
+  /* Absorbs the scrollbar-width overflow from the full-bleed 100vw SectionAtmosphere
+     layers so they never introduce a horizontal scrollbar. `clip` (not `hidden`)
+     avoids creating a scroll container, so fixed/sticky positioning is unaffected. */
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 1px 1px, var(--color-rule) 1px, transparent 0) 0 0 / 14px 14px,
+    var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--step-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+  margin: 0 0 0.6em;
+  color: var(--color-crimson);
+  text-shadow: 0.06em 0.06em 0 var(--color-ink);
+}
+
+h1 { font-size: var(--step-h1); }
+h2 { font-size: var(--step-h2); }
+h3 { font-size: var(--step-h3); }
+
+p {
+  margin: 0 0 1em;
+  max-width: 34rem;
+}
+
+img,
+picture,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-teal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-crimson);
+  outline-offset: 2px;
+}
+
+/* Classy, on-theme text selection instead of the browser's blue: ink-on-paper that
+   inverts per issue. Scoped by the forced-theme wrappers (hardcoded, since ::selection
+   doesn't reliably inherit custom properties). Cream areas → black highlight with cream
+   text; dark areas → cream highlight with dark text. `text-shadow: none` keeps the
+   comic titles' offset shadow from muddying the selection. */
+::selection {
+  background-color: #1a1a1a;
+  color: #f4edda;
+  text-shadow: none;
+}
+.theme-light ::selection {
+  background-color: #1a1a1a;
+  color: #f4edda;
+  text-shadow: none;
+}
+.theme-dark ::selection {
+  background-color: #f2ead9;
+  color: #14151a;
+  text-shadow: none;
+}
+
+/* Forced per-issue palettes — later issues deliberately break from whatever the
+   visitor's OS theme is (Issue #1–#2 always dark, Issue #3 onward always cream),
+   instead of the whole page just following prefers-color-scheme uniformly. */
+.theme-dark {
+  color-scheme: dark;
+  --color-ink: #f2ead9;
+  --color-paper: #14151a;
+  --color-paper-dim: #1c1e24;
+  --color-crimson: #9e3426;
+  --color-teal: #4fd6c6;
+  --color-gold: #f0b429;
+  --color-rule: rgb(242 234 217 / 14%);
+  --color-shadow: rgb(0 0 0 / 60%);
+  --color-caption: rgb(242 234 217 / 62%);
+}
+
+.theme-light {
+  color-scheme: light;
+  --color-ink: #1a1a1a;
+  --color-paper: #f4edda;
+  --color-paper-dim: #ece3cd;
+  --color-crimson: #9e3426;
+  --color-teal: #1b7a72;
+  --color-gold: #c68a1f;
+  --color-rule: rgb(26 26 26 / 16%);
+  --color-shadow: rgb(26 26 26 / 35%);
+  --color-caption: rgb(26 26 26 / 62%);
+}
+
+/* ── Scroll-reveal state machine (see src/scripts/reveal.ts) ─────────────────
+   Hidden state is gated on `html.js` so that with JS off, nothing is ever stuck
+   invisible. Reveals animate only `opacity` + `translate` (or `scale`) — the
+   independent transform properties — so they compose with, and never clobber,
+   an element's own `transform: rotate()` (e.g. tilted Panels). Because they're
+   compositor-only and the element keeps its layout box, reveals cause zero CLS. */
+.js [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+}
+
+.js [data-reveal] {
+  transition:
+    opacity 0.55s ease,
+    translate 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(var(--reveal-i, 0) * 80ms);
+}
+
+/* "fall": drop in from high up and bounce on landing — a comic panel tumbling from
+   the sky. Uses a keyframe animation (not the shared transition) so it can accelerate
+   like gravity and then bounce, which a single easing curve can't do. */
+.js [data-reveal='fall']:not(.is-revealed) {
+  translate: 0 -100px;
+}
+
+.js [data-reveal='fall'] {
+  transition: none;
+}
+
+.js [data-reveal='fall'].is-revealed:not(.reveal-instant) {
+  animation: reveal-fall 0.9s both;
+  animation-delay: calc(var(--reveal-i, 0) * 90ms);
+}
+
+@keyframes reveal-fall {
+  0% {
+    translate: 0 -100px;
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45); /* accelerate the fall */
+  }
+  45% {
+    opacity: 1;
+  }
+  60% {
+    translate: 0 0; /* impact */
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  74% {
+    translate: 0 -14px; /* bounce up */
+  }
+  86% {
+    translate: 0 0;
+    animation-timing-function: ease-out;
+  }
+  94% {
+    translate: 0 -4px; /* smaller second bounce */
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* "rise": ease up from just below — for lede/body text, speech bubbles. */
+.js [data-reveal='rise']:not(.is-revealed) {
+  translate: 0 24px;
+}
+
+/* "pop": stamp in — for section titles. Overshoot easing on `scale` reads as a
+   comic cover stamp landing. */
+.js [data-reveal='pop']:not(.is-revealed) {
+  scale: 0.9;
+}
+
+/* "fade": opacity only (default when no translate/scale variant applies). */
+
+/* Instant-settle: applied by the engine to anything already at/above the fold on
+   load, so a mid-page refresh doesn't replay reveals for content above it. */
+.js [data-reveal].reveal-instant {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Never leave reveal content hidden or shifted for reduced-motion visitors. */
+  .js [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+  }
+}

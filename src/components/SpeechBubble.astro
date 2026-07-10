@@ -1,0 +1,74 @@
+---
+interface Props {
+	/** Attribution shown below the bubble, e.g. a tutoring testimonial's source. */
+	author?: string;
+	/** Which side the tail points from, as if the speaker were standing there. */
+	tail?: 'left' | 'right';
+	class?: string;
+	/** Extra attributes (e.g. data-reveal) forwarded to the root. */
+	[key: string]: unknown;
+}
+
+const { author, tail = 'left', class: className, ...rest } = Astro.props;
+---
+
+<figure class:list={['bubble', className]} data-tail={tail} {...rest}>
+	<div class="bubble__body">
+		<slot />
+	</div>
+	{author && <figcaption class="bubble__author">— {author}</figcaption>}
+</figure>
+
+<style>
+	.bubble {
+		margin: 0;
+		max-width: 28rem;
+	}
+
+	.bubble__body {
+		position: relative;
+		background: var(--color-paper);
+		border: 3px solid var(--color-ink);
+		border-radius: 1.5rem;
+		padding: 1.25rem 1.5rem;
+		font-family: var(--font-body);
+		color: var(--color-ink);
+	}
+
+	.bubble__body::before,
+	.bubble__body::after {
+		content: '';
+		position: absolute;
+		bottom: -0.85rem;
+		border: 0.85rem solid transparent;
+		border-bottom: none;
+	}
+
+	.bubble__body::before {
+		border-top-color: var(--color-ink);
+	}
+
+	.bubble__body::after {
+		bottom: -0.62rem;
+		border-width: 0.62rem;
+		border-bottom: none;
+		border-top-color: var(--color-paper);
+	}
+
+	.bubble[data-tail='left'] .bubble__body::before,
+	.bubble[data-tail='left'] .bubble__body::after {
+		left: 2rem;
+	}
+
+	.bubble[data-tail='right'] .bubble__body::before,
+	.bubble[data-tail='right'] .bubble__body::after {
+		right: 2rem;
+	}
+
+	.bubble__author {
+		margin-top: 0.6rem;
+		font-size: 0.85rem;
+		color: var(--color-caption);
+		text-align: right;
+	}
+</style>

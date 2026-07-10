@@ -1,0 +1,78 @@
+---
+// A Ben-Day halftone dissolve between two issues at a dark↔light boundary: one colour
+// dissolves into the other through interleaved comic dots, rather than a hard cut or a
+// bar. Static — no scroll animation.
+//
+// Two dot grids (::before, ::after), offset by half a cell so they interleave: the
+// destination colour's dots bleed IN from the start edge (where they contrast against
+// the source-colour base), while the source colour's dots recede toward the end. A gentle
+// base gradient underneath carries the overall value shift. Colours are hardcoded because
+// this sits BETWEEN the forced-theme wrappers (index.astro), where theme tokens would
+// resolve to the wrong OS-theme value.
+interface Props {
+	direction: 'dark-to-light' | 'light-to-dark';
+}
+const { direction } = Astro.props;
+---
+
+<div class:list={['halftone', `halftone--${direction}`]} aria-hidden="true"></div>
+
+<style>
+	.halftone {
+		--dark: #14151a;
+		--cream: #f4edda;
+		--cell: 12px;
+		height: clamp(78px, 10vw, 130px);
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Gentle base blend under the dots. */
+	.halftone--dark-to-light {
+		background: linear-gradient(180deg, var(--dark), var(--cream));
+	}
+	.halftone--light-to-dark {
+		background: linear-gradient(180deg, var(--cream), var(--dark));
+	}
+
+	.halftone::before,
+	.halftone::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-repeat: repeat;
+		background-size: var(--cell) var(--cell);
+	}
+	/* Half-cell offset so the two grids interleave into a dissolve rather than overlap. */
+	.halftone::after {
+		background-position: calc(var(--cell) / 2) calc(var(--cell) / 2);
+	}
+
+	/* ── dark → light: dark on top, cream on bottom ────────────────────────────── */
+	/* cream dots bleeding into the dark upper zone */
+	.halftone--dark-to-light::before {
+		background-image: radial-gradient(circle at center, var(--cream) 33%, transparent 35%);
+		-webkit-mask: linear-gradient(180deg, transparent, #000 35%, transparent 75%);
+		mask: linear-gradient(180deg, transparent, #000 35%, transparent 75%);
+	}
+	/* dark dots receding through the cream lower zone */
+	.halftone--dark-to-light::after {
+		background-image: radial-gradient(circle at center, var(--dark) 33%, transparent 35%);
+		-webkit-mask: linear-gradient(180deg, transparent 25%, #000 65%, transparent);
+		mask: linear-gradient(180deg, transparent 25%, #000 65%, transparent);
+	}
+
+	/* ── light → dark: cream on top, dark on bottom ────────────────────────────── */
+	/* dark dots bleeding into the cream upper zone */
+	.halftone--light-to-dark::before {
+		background-image: radial-gradient(circle at center, var(--dark) 33%, transparent 35%);
+		-webkit-mask: linear-gradient(180deg, transparent, #000 35%, transparent 75%);
+		mask: linear-gradient(180deg, transparent, #000 35%, transparent 75%);
+	}
+	/* cream dots receding through the dark lower zone */
+	.halftone--light-to-dark::after {
+		background-image: radial-gradient(circle at center, var(--cream) 33%, transparent 35%);
+		-webkit-mask: linear-gradient(180deg, transparent 25%, #000 65%, transparent);
+		mask: linear-gradient(180deg, transparent 25%, #000 65%, transparent);
+	}
+</style>

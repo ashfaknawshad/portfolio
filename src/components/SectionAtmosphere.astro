@@ -1,0 +1,157 @@
+---
+// A single low-opacity ambient motif that sits behind a section's content, giving each
+// issue its own atmosphere without competing with the content. One element per section:
+// animated with `transform`/`opacity` only (never `background-position` on a large area,
+// which would repaint every frame), aria-hidden, pointer-events:none, paused entirely
+// under prefers-reduced-motion. Opacity is kept low enough that every text/background
+// contrast pair still passes.
+//
+// The host section must be `position: relative; isolation: isolate;` — that makes it a
+// stacking context so this layer at `z-index: -1` sits *below* the section's in-flow
+// content but *above* the ancestor issue-block's dotted background, with no need to
+// elevate every content child.
+interface Props {
+	kind: 'rays' | 'dots' | 'spotlight' | 'grid' | 'backcover';
+}
+
+const { kind } = Astro.props;
+---
+
+<div class:list={['atmosphere', `atmosphere--${kind}`]} aria-hidden="true"></div>
+
+<style>
+	.atmosphere {
+		position: absolute;
+		/* Full-bleed to the viewport, not the section's max-width content column — the
+		   motif should span the whole issue like the dotted background does, so on wide
+		   monitors the rays/dots reach the edges instead of stopping at ~72rem. The
+		   100vw break-out is centred on the section (which is itself centred); the
+		   `overflow-x: clip` on <html> (global.css) absorbs the scrollbar-width overflow
+		   so this never creates a horizontal scrollbar. */
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 100vw;
+		margin-left: -50vw;
+		z-index: -1;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	/* Every motif's animated child is a pseudo-element so the motif can be larger than
+	   the section (rays/dots need to over-hang so rotation/drift never reveals an edge). */
+	.atmosphere::before {
+		content: '';
+		position: absolute;
+		inset: -50%;
+		background-repeat: repeat;
+	}
+
+	/* The rotating conic motifs (rays, backcover) must be a large centred SQUARE, not the
+	   shared wide-short `inset: -50%` rectangle: a rectangle that isn't at least as big as
+	   the viewport's diagonal stops covering the corners as it rotates, so you'd see the
+	   ray ends sweep in and out. A 300vmax square always blankets the viewport at every
+	   angle, so the rays always read full-length. */
+	.atmosphere--rays::before,
+	.atmosphere--backcover::before {
+		inset: auto;
+		top: 50%;
+		left: 50%;
+		width: 300vmax;
+		height: 300vmax;
+		translate: -50% -50%;
+	}
+
+	/* ── rays (Issue #1 Origin): slow-rotating comic sunburst, echoes the cover art. ── */
+	.atmosphere--rays::before {
+		background: repeating-conic-gradient(
+			from 0deg at 50% 50%,
+			var(--color-crimson) 0deg 6deg,
+			transparent 6deg 12deg
+		);
+		opacity: 0.05;
+		animation: atmo-spin 90s linear infinite;
+	}
+
+	/* ── dots (Issue #2 Powers): halftone field drifting diagonally. ── */
+	.atmosphere--dots::before {
+		background-image: radial-gradient(circle at center, var(--color-teal) 1.4px, transparent 1.6px);
+		background-size: 26px 26px;
+		opacity: 0.09;
+		animation: atmo-drift 26s linear infinite;
+	}
+
+	/* ── spotlight (Issue #3 Team-Ups): soft cinema spotlight sweeping side to side. ── */
+	.atmosphere--spotlight::before {
+		inset: -30% -20%;
+		background: radial-gradient(
+			ellipse 40% 60% at 50% 40%,
+			var(--color-gold) 0%,
+			transparent 70%
+		);
+		opacity: 0.08;
+		animation: atmo-sweep 22s ease-in-out infinite;
+	}
+
+	/* ── grid (Issue #4 Side Quests): faint graph-paper, gently breathing (chalkboard). ── */
+	.atmosphere--grid::before {
+		inset: 0;
+		background-image:
+			linear-gradient(var(--color-teal) 1px, transparent 1px),
+			linear-gradient(90deg, var(--color-teal) 1px, transparent 1px);
+		background-size: 32px 32px;
+		opacity: 0.06;
+		animation: atmo-breathe 14s ease-in-out infinite;
+	}
+
+	/* ── backcover (Issue #5 Contact): converging credits rays, counter-rotating. ── */
+	.atmosphere--backcover::before {
+		background: repeating-conic-gradient(
+			from 0deg at 50% 50%,
+			var(--color-crimson) 0deg 4deg,
+			transparent 4deg 14deg
+		);
+		opacity: 0.045;
+		animation: atmo-spin 120s linear infinite reverse;
+	}
+
+	@keyframes atmo-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes atmo-drift {
+		to {
+			transform: translate(26px, 26px);
+		}
+	}
+
+	@keyframes atmo-sweep {
+		0%,
+		100% {
+			transform: translateX(-12%);
+		}
+		50% {
+			transform: translateX(12%);
+		}
+	}
+
+	@keyframes atmo-breathe {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 0.06;
+		}
+		50% {
+			transform: scale(1.04);
+			opacity: 0.085;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.atmosphere::before {
+			animation: none !important;
+		}
+	}
+</style>

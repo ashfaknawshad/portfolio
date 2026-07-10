@@ -1,0 +1,88 @@
+---
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionAtmosphere from '../components/SectionAtmosphere.astro';
+import { projects } from '../data/projects';
+---
+
+<section class="team-ups" id="issue-3">
+	<SectionAtmosphere kind="spotlight" />
+	<header class="team-ups__header">
+		<span class="team-ups__eyebrow" data-reveal="rise">Issue #3: Team-Ups</span>
+		<h2 class="team-ups__title" data-reveal="pop">THE ROSTER</h2>
+	</header>
+
+	<div class="team-ups__grid">
+		{
+			projects.map((project, i) => (
+				<ProjectCard
+					project={project}
+					rotate={project.isHero ? 0 : i % 2 === 0 ? -0.6 : 0.6}
+					data-reveal="fall"
+					style={`--reveal-i: ${i}`}
+				/>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.team-ups {
+		position: relative;
+		isolation: isolate; /* stacking context for the SectionAtmosphere layer */
+		padding: var(--space-panel);
+		max-width: 72rem;
+		margin: 0 auto;
+	}
+
+	.team-ups__header {
+		text-align: center;
+		margin-bottom: clamp(2rem, 5vw, 3rem);
+	}
+
+	.team-ups__eyebrow {
+		display: block;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.85rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		/* Crimson (not the usual teal) tints the "showcase" issues — this and Contact —
+		   apart from the academic teal of Powers/Side Quests. Passes contrast on cream;
+		   gold would not. */
+		color: var(--color-crimson);
+		margin-bottom: 0.5rem;
+	}
+
+	.team-ups__title {
+		margin: 0;
+	}
+
+	.team-ups__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: clamp(2rem, 5vw, 2.5rem);
+	}
+
+	@media (min-width: 700px) {
+		.team-ups__grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1100px) {
+		/* 6 columns instead of 3 so the first row (SME-GPT + AI Search) can each span
+		   half (3 of 6) and fill that row exclusively, while every other card spans a
+		   third (2 of 6) for the normal 3-per-row layout below it. */
+		.team-ups__grid {
+			grid-template-columns: repeat(6, 1fr);
+		}
+
+		.team-ups__grid > :global(*) {
+			grid-column: span 2;
+		}
+
+		.team-ups__grid > :global(:nth-child(-n + 2)) {
+			grid-column: span 3;
+		}
+	}
+</style>

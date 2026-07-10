@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+	name: string;
+	icon?: string;
+	learning?: boolean;
+}
+
+const { name, icon, learning = false } = Astro.props;
+---
+
+<span class="badge" data-learning={learning}>
+	{icon && <Icon name={icon} size="1.1em" class="badge__icon" />}
+	<span class="badge__label">{name}</span>
+	{learning && <span class="badge__tag">Learning</span>}
+</span>
+
+<style>
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45em;
+		padding: 0.4em 0.75em;
+		background: var(--color-paper);
+		border: 1.5px solid var(--color-rule);
+		border-radius: 0.4em;
+		font-family: var(--font-body);
+		font-size: 0.95rem;
+		color: var(--color-ink);
+		line-height: 1;
+		transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+	}
+
+	.badge:hover {
+		transform: scale(1.06);
+		border-color: var(--color-crimson);
+		background: color-mix(in srgb, var(--color-crimson) 10%, var(--color-paper));
+	}
+
+	.badge[data-learning='true'] {
+		border-style: dashed;
+	}
+
+	.badge__icon {
+		color: var(--color-ink);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.badge {
+			transition: none;
+		}
+
+		.badge:hover {
+			transform: none;
+		}
+	}
+
+	.badge__tag {
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.65em;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-teal);
+		border: 1px solid var(--color-teal);
+		border-radius: 999px;
+		padding: 0.15em 0.5em;
+		margin-left: 0.2em;
+	}
+</style>

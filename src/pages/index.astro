@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../sections/Hero.astro';
+import Powers from '../sections/Powers.astro';
+import TeamUps from '../sections/TeamUps.astro';
+import SideQuests from '../sections/SideQuests.astro';
+import Contact from '../sections/Contact.astro';
+import ChapterNav from '../components/ChapterNav.astro';
+import HalftoneDivider from '../components/HalftoneDivider.astro';
+---
+
+<Layout
+	title="Ashfak Nawshad — Origin Story"
+	description="AI student, mathematics tutor, and cinephile — portfolio told as a comic book."
+>
+	{/* Theme rhythm: dark (Origin + Powers) → cream (Team-Ups) → dark (Side Quests) →
+	    cream (Contact). A halftone dot dissolve marks each dark↔light boundary. */}
+	<div class="theme-dark issue-block">
+		<Hero />
+		<Powers />
+	</div>
+	<HalftoneDivider direction="dark-to-light" />
+	<div class="theme-light issue-block">
+		<TeamUps />
+	</div>
+	<HalftoneDivider direction="light-to-dark" />
+	<div class="theme-dark issue-block">
+		<SideQuests />
+	</div>
+	<HalftoneDivider direction="dark-to-light" />
+	<div class="theme-light issue-block">
+		<Contact />
+	</div>
+	<ChapterNav />
+</Layout>
+
+<style>
+	/* Each issue paints its own dotted paper — body's background is only the
+	   fallback for content outside these blocks (there currently is none).
+	   background-attachment: fixed anchors the dot grid to the viewport instead of
+	   each element's own box, so the grid stays in phase across the dark→cream
+	   boundary (and every section) regardless of how tall the content above it is —
+	   a plain "0 0" position only lines up by coincidence. */
+	.issue-block {
+		background:
+			radial-gradient(circle at 1px 1px, var(--color-rule) 1px, transparent 0) 0 0 / 14px 14px fixed,
+			var(--color-paper);
+	}
+</style>

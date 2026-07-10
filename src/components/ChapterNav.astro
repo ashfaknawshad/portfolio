@@ -1,0 +1,178 @@
+---
+// Persistent "issue" navigator — a fixed vertical rail of 5 comic-chapter markers
+// (I–V) that scroll-spy the current issue and let visitors jump between them. Real
+// anchor links (keyboard-navigable, work with JS off); the script only maintains the
+// active highlight. Colours are hardcoded (not theme tokens) because this floats over
+// both the dark issues (#1–2) and the cream issues (#3–5) as they scroll under it, so
+// each marker carries its own always-legible chip.
+const issues = [
+	{ numeral: 'I', label: 'Origin', href: '#issue-1' },
+	{ numeral: 'II', label: 'The Powers', href: '#issue-2' },
+	{ numeral: 'III', label: 'Team-Ups', href: '#issue-3' },
+	{ numeral: 'IV', label: 'Side Quests', href: '#issue-4' },
+	{ numeral: 'V', label: 'Contact', href: '#issue-5' },
+];
+---
+
+<nav class="chapter-nav" aria-label="Issues">
+	<ul class="chapter-nav__list">
+		{
+			issues.map((issue) => (
+				<li>
+					<a class="chapter-nav__link" href={issue.href} data-target={issue.href}>
+						<span class="chapter-nav__label">{issue.label}</span>
+						<span class="chapter-nav__numeral">{issue.numeral}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<style>
+	.chapter-nav {
+		position: fixed;
+		top: 50%;
+		right: clamp(0.4rem, 1.5vw, 1.25rem);
+		translate: 0 -50%;
+		z-index: 40;
+	}
+
+	.chapter-nav__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.chapter-nav__link {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		text-decoration: none;
+	}
+
+	/* Label is hidden until hover/focus/active, then slides in from the right. */
+	.chapter-nav__label {
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #1a1a1a;
+		background: #f4edda;
+		border: 1.5px solid #1a1a1a;
+		border-radius: 999px;
+		padding: 0.2em 0.6em;
+		white-space: nowrap;
+		opacity: 0;
+		translate: 8px 0;
+		transition:
+			opacity 0.2s ease,
+			translate 0.2s ease;
+		pointer-events: none;
+	}
+
+	.chapter-nav__numeral {
+		display: grid;
+		place-items: center;
+		width: 1.9rem;
+		height: 1.9rem;
+		flex-shrink: 0;
+		font-family: var(--font-display);
+		font-size: 0.85rem;
+		line-height: 1;
+		color: #1a1a1a;
+		background: #f4edda;
+		border: 2px solid #1a1a1a;
+		border-radius: 50%;
+		box-shadow: 2px 2px 0 rgb(26 26 26 / 35%);
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			scale 0.2s ease;
+	}
+
+	.chapter-nav__link:hover .chapter-nav__numeral,
+	.chapter-nav__link:focus-visible .chapter-nav__numeral {
+		scale: 1.12;
+	}
+
+	.chapter-nav__link:hover .chapter-nav__label,
+	.chapter-nav__link:focus-visible .chapter-nav__label {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	/* Active issue (set by the scroll-spy script): crimson chip + persistent label. */
+	.chapter-nav__link[aria-current='true'] .chapter-nav__numeral {
+		background: #9e3426;
+		color: #f4edda;
+	}
+
+	.chapter-nav__link[aria-current='true'] .chapter-nav__label {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	/* Mobile: keep the dots but drop the labels to save width and avoid any overlap. */
+	@media (max-width: 640px) {
+		.chapter-nav {
+			right: 0.4rem;
+		}
+		.chapter-nav__numeral {
+			width: 1.6rem;
+			height: 1.6rem;
+			font-size: 0.75rem;
+		}
+		.chapter-nav__label {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.chapter-nav__label,
+		.chapter-nav__numeral {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const links = Array.from(
+		document.querySelectorAll<HTMLAnchorElement>('.chapter-nav__link'),
+	);
+
+	if (links.length > 0 && 'IntersectionObserver' in window) {
+		const sectionToLink = new Map<Element, HTMLAnchorElement>();
+		for (const link of links) {
+			const id = link.dataset.target?.slice(1);
+			const section = id ? document.getElementById(id) : null;
+			if (section) sectionToLink.set(section, link);
+		}
+
+		const setActive = (link: HTMLAnchorElement) => {
+			for (const l of links) l.removeAttribute('aria-current');
+			link.setAttribute('aria-current', 'true');
+		};
+
+		// A thin band across the vertical centre of the viewport: whichever issue
+		// crosses it is "current".
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						const link = sectionToLink.get(entry.target);
+						if (link) setActive(link);
+					}
+				}
+			},
+			{ rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+		);
+
+		for (const section of sectionToLink.keys()) observer.observe(section);
+	}
+</script>
