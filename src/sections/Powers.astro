@@ -124,7 +124,8 @@ import { skillCategories, mathTopics } from '../data/skills';
 	.powers__math-title {
 		font-family: var(--font-display);
 		color: var(--color-crimson);
-		text-shadow: 0.06em 0.06em 0 var(--color-ink);
+		/* No text-shadow on dark — inherits `.theme-dark h3 { text-shadow: none }`
+		   (see global.css); the cream offset duplicate hurt readability here. */
 		font-size: 1.4rem;
 		margin: 0 0 1rem;
 	}

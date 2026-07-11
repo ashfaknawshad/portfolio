@@ -125,6 +125,14 @@ h1 { font-size: var(--step-h1); }
 h2 { font-size: var(--step-h2); }
 h3 { font-size: var(--step-h3); }
 
+/* On the dark issues, --color-ink is cream, so the heading offset shadow becomes a
+   bright cream duplicate. On the small h3 "topic" headings (skill categories, syllabus
+   groups) that duplicate hurt readability, so it's dropped entirely — clean crimson,
+   no white. Big cover titles (h1/h2) keep the full comic offset. */
+.theme-dark h3 {
+  text-shadow: none;
+}
+
 p {
   margin: 0 0 1em;
   max-width: 34rem;
